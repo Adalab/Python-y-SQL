@@ -4,6 +4,7 @@ Nos piden el ID del cliente y el nombre de la empresa y el número de pedidos.*/
 SELECT customers.company_name, customer_id, COUNT(orders.order_id)
 	FROM customers
     NATURAL JOIN orders
+    WHERE country = "UK"
     GROUP BY customer_id, company_name;
 
 
@@ -13,24 +14,17 @@ query que nos sirva para conocer cuántos objetos ha pedido cada empresa cliente
 Nos piden concretamente conocer el nombre de la empresa, el año, y la cantidad de objetos que han pedido. 
 Para ello hará falta hacer 2 joins.*/
 
-#nombre de empresa: customers / company_name
-#país empresa: customers / country
-#año: orders / YEAR(order_date)
-#objetos: order_details / product_id (groupbybear por aquí)
 
-#vamos a tener que unir customers con orders por order_id (es un INNER)
-# tendremos que unir orders (order_detail) por order_id (otro INNER)
-
-SELECT company_name, YEAR(order_date), COUNT(product_id)
+SELECT company_name AS "NombreEmpresa", YEAR(order_date) AS "Año", SUM(quantity) AS "NumObjetos"
 	FROM customers
     INNER JOIN orders
     ON customers.customer_id = orders.customer_id
     INNER JOIN order_details
     ON orders.order_id = order_details.order_id
     WHERE country = "UK" 
-    GROUP BY orders.order_id, company_name;
+    GROUP BY company_name, YEAR(order_date);
     
-#sale el nombre de la empresa de UK, el año y el count del product_id
+#suma de la cantidad de objetos por año por compañía
 
 
 
@@ -39,24 +33,35 @@ SELECT company_name, YEAR(order_date), COUNT(product_id)
 misma consulta anterior pero con la adición de la cantidad de dinero que han pedido por esa cantidad de objetos, teniendo en cuenta los descuentos, etc. 
 Ojo que los descuentos en nuestra tabla nos salen en porcentajes, 15% nos sale como 0.15.*/
 
-
+SELECT company_name AS "NombreEmpresa", YEAR(order_date) AS "Año", SUM(quantity) AS "NumObjetos", SUM((unit_price * quantity) * (1 - discount)) AS "DineroTotal"
+	FROM customers
+    INNER JOIN orders
+    ON customers.customer_id = orders.customer_id
+    INNER JOIN order_details
+    ON orders.order_id = order_details.order_id
+    WHERE country = "UK" 
+    GROUP BY company_name, YEAR(order_date);
 
 
 
 /*4. BONUS: Pedidos que han realizado cada compañía y su fecha:
 consulta que indique el nombre de cada compañia cliente junto con cada pedido que han realizado y su fecha.*/
 
-SELECT company_name, YEAR(order_date), order_details.product_id
+SELECT order_id AS "OrderID", company_name AS "CompanyName", order_date AS "OrderDate"
 	FROM customers
-    CROSS JOIN customers
-    WHERE company_name = order_details.unit_price
-    GROUP BY order_details.product_id
-   
+    NATURAL JOIN orders;
+    
 
-
+#Síndrome de Marc Jacobs
 
 
 
 /*5. BONUS: Tipos de producto vendidos:
 lista con cada tipo de producto que se han vendido, sus categorías, nombre de la categoría y el nombre del producto, 
 y el total de dinero por el que se ha vendido cada tipo de producto (teniendo en cuenta los descuentos).*/
+
+SELECT category_id, category_name, products.product_name, ((quantity) - (quantity * unit_price) * discount) AS "ProductSales"
+	FROM categories
+    NATURAL JOIN products
+    NATURAL JOIN order_details
+    GROUP BY category_id, product_name;

@@ -56,3 +56,11 @@ SELECT A.city, A.first_name AS "NombreEmpleado", A.last_name AS "ApellidoEmplead
 Pedidos y empresas con pedidos asociados o no:
 todos los pedidos, tengan empresa asociada o no, y todas las empresas tengan pedidos asociados o no. Muestra el ID del pedido, 
 el nombre de la empresa y la fecha del pedido (si existe).*/
+
+SELECT category_id, category_name, product_name, ROUND(SUM((order_details.unit_price * quantity) * (1 - discount)), 2) AS "ProductSales"
+	FROM categories
+    NATURAL JOIN products
+    INNER JOIN order_details
+    ON products.product_id = order_details.product_id
+    GROUP BY category_id, product_name
+    ORDER BY category_id, product_name;
