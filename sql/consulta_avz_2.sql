@@ -26,3 +26,44 @@ SELECT COUNT(order_id), MONTH(shipped_date) AS 'Mes', YEAR(shipped_date) AS 'Añ
 	FROM orders
 	GROUP BY Mes, Año;
     
+/* 5. nombres de las ciudades con 4 o más empleadas*/
+
+SELECT city, COUNT(employee_id)
+	FROM employees
+    GROUP BY city
+    HAVING COUNT(employee_id) >= 4;
+#London
+
+/* 6. pedidos en 2 categorías: "Alto" > 2000, Bajo < 2000*/
+
+SELECT order_id, 
+	CASE
+		WHEN ((unit_price * quantity) - (unit_price * quantity * discount)) > 2000 THEN "Alto"
+		ELSE "Bajo"
+    END AS RangoPrecio
+    FROM order_details
+    GROUP BY order_id;
+###### HELP PLEASE
+/*SELECT order_id, 
+	CASE
+		WHEN ((unit_price * quantity) - (unit_price * quantity * discount)) > 2000 THEN "Alto"
+		ELSE "Bajo"
+        END AS RangoPrecio
+        FROM order_details
+        GROUP BY order_id, RangoPrecio;
+        
+SELECT order_id, ((unit_price * quantity) - (unit_price * quantity * discount)) AS PRECIO
+FROM order_details
+GROUP BY order_id, PRECIO;*/
+    
+SELECT order_id, ((unit_price * quantity) - (unit_price * quantity * discount))
+FROM order_details
+HAVING ((order_details.unit_price * quantity) - (order_details.unit_price * quantity * discount)) > 
+	(SELECT CASE
+		WHEN PRECIO > 2000 THEN "Alto"
+        ELSE "Bajo"
+        END);
+    
+    
+    
+    
