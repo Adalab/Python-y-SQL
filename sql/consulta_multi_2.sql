@@ -1,4 +1,4 @@
-/*1. Qué empresas tenemos en la BBDD Northwind:
+ /*1. Qué empresas tenemos en la BBDD Northwind:
 consulta que nos devuelva el nombre de todas las empresas cliente, 
 los ID de sus pedidos y las fechas.*/
 
